@@ -3,4 +3,12 @@ Sort Stellaris mods in alphabetical order
 
 Force load all incompatible mods (you can disable them manually in the launcher)
 
+## How to use
+Download [load_order_stellaris24.exe](https://github.com/haifengkao/StellairsLoadOrderFixer24/releases/download/1.0/load_order_stellaris24.exe)
+
+Then double click it
+
+If you see "done", the load order has been succesfully sorted
+
+
 ![demo](https://github.com/haifengkao/StellairsLoadOrderFixer24/blob/master/demo.jpg)
