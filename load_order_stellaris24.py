@@ -3,6 +3,7 @@ import json
 from shutil import copyfile
 import os
 import ctypes  # An included library with Python install.
+import sys
 
 def abort(message):
     Mbox('', message, 0)
@@ -64,16 +65,17 @@ def run(settingPath):
 		data = json.load(json_file)
 		modList = getModList(data)
 	if len(modList) <= 0:
-            abort('no mod found')
+		abort('no mod found')
 	idList = [mod.modId for mod in modList]
 	hashList = [mod.hashKey for mod in modList]
 	writeDisplayOrder(hashList, game_data)
 	writeLoadOrder(idList, dlc_load)
 
 def Mbox(title, text, style):
-	return ctypes.windll.user32.MessageBoxA(0, text, title, style)
+	return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
-setting = os.path.expanduser('~/Paradox Interactive/Stellaris')
+gameFolder = os.path.join('~', 'Documents', 'Paradox Interactive', 'Stellaris')
+setting = os.path.expanduser(gameFolder)
 # setting = "./"
 run(setting)
 Mbox('', 'done', 0)
