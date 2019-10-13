@@ -20,14 +20,15 @@ def sortedKey(mod):
     return mod.sortedKey
 
 def getModList(data):
-    modList = []
-    for key, data in data.items():
-        name = data['displayName']
-        modId = data['gameRegistryId']
-        mod = Mod(key, name, modId)
-        modList.append(mod)
-    modList.sort(key=sortedKey)
-    return modList
+	modList = []
+	for key, data in data.items():
+		name = data['displayName']
+		modId = data['gameRegistryId']
+		mod = Mod(key, name, modId)
+		modList.append(mod)
+	modList.sort(key=sortedKey, reverse=True)
+	return modList
+
 
 def writeLoadOrder(idList, dlc_load):
     data = {}
@@ -72,8 +73,12 @@ def run(settingPath):
 def Mbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
-gameFolder = os.path.join('~', 'Documents', 'Paradox Interactive', 'Stellaris')
-setting = os.path.expanduser(gameFolder)
-# setting = './'
-run(setting)
-Mbox('', 'done', 0)
+# check Stellaris settings location
+locations = [os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), ".", "..", os.path.join(os.path.expanduser('~'), '.local', 'share','Paradox Interactive', 'Stellaris')]
+settingPaths = [settingPath for settingPath in locations if os.path.isfile(os.path.join(settingPath, "mods_registry.json"))]
+if (len(settingPaths) > 0):
+    print('find Stellaris setting at ', settingPaths[0])
+    run(settingPaths[0])
+    Mbox('', 'done', 0)
+else:
+    Mbox('', 'unable to location "mods_registry.json', 0)
