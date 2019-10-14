@@ -4,10 +4,14 @@ from shutil import copyfile
 import os
 import ctypes  # An included library with Python install.
 import sys
+import traceback
+
+
 
 def abort(message):
-    Mbox('', message, 0)
+    Mbox('abort', message, 0)
     sys.exit(1)
+
 
 class Mod():
     def __init__(self, hashKey, name, modId):
@@ -16,18 +20,23 @@ class Mod():
         self.modId = modId
         self.sortedKey = name.encode('ascii', errors='ignore')
 
+
 def sortedKey(mod):
     return mod.sortedKey
 
+
 def getModList(data):
-	modList = []
-	for key, data in data.items():
-		name = data['displayName']
-		modId = data['gameRegistryId']
-		mod = Mod(key, name, modId)
-		modList.append(mod)
-	modList.sort(key=sortedKey, reverse=True)
-	return modList
+    modList = []
+    for key, data in data.items():
+        try:
+            name = data['displayName']
+            modId = data['gameRegistryId']
+            mod = Mod(key, name, modId)
+            modList.append(mod)
+        except KeyError:
+            print('key not found in ', key, data)
+    modList.sort(key=sortedKey, reverse=True)
+    return modList
 
 
 def writeLoadOrder(idList, dlc_load):
@@ -42,6 +51,7 @@ def writeLoadOrder(idList, dlc_load):
     with open(dlc_load, 'w') as json_file:
         json.dump(data, json_file)
 
+
 def writeDisplayOrder(hashList, game_data):
     data = {}
     with open(game_data, 'r+') as json_file:
@@ -51,6 +61,7 @@ def writeDisplayOrder(hashList, game_data):
     data['modsOrder'] = hashList
     with open(game_data, 'w') as json_file:
         json.dump(data, json_file)
+
 
 def run(settingPath):
     registry = os.path.join(settingPath, 'mods_registry.json')
@@ -70,15 +81,32 @@ def run(settingPath):
     writeDisplayOrder(hashList, game_data)
     writeLoadOrder(idList, dlc_load)
 
+
 def Mbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
+def errorMesssage(error):
+    error_class = e.__class__.__name__  # 取得錯誤類型
+    detail = e.args[0]  # 取得詳細內容
+    _, _, tb = sys.exc_info()  # 取得Call Stack
+    lastCallStack = traceback.extract_tb(tb)[-1]  # 取得Call Stack的最後一筆資料
+    fileName = lastCallStack[0]  # 取得發生的檔案名稱
+    lineNum = lastCallStack[1]  # 取得發生的行號
+    funcName = lastCallStack[2]  # 取得發生的函數名稱
+    return "File \"{}\", line {}, in {}: [{}] {}".format(
+        fileName, lineNum, funcName, error_class, detail)
+
 # check Stellaris settings location
-locations = [os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), ".", "..", os.path.join(os.path.expanduser('~'), '.local', 'share','Paradox Interactive', 'Stellaris')]
-settingPaths = [settingPath for settingPath in locations if os.path.isfile(os.path.join(settingPath, "mods_registry.json"))]
+locations = [os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), ".", "..", os.path.join(
+    os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')]
+settingPaths = [settingPath for settingPath in locations if os.path.isfile(
+    os.path.join(settingPath, "mods_registry.json"))]
 if (len(settingPaths) > 0):
     print('find Stellaris setting at ', settingPaths[0])
-    run(settingPaths[0])
-    Mbox('', 'done', 0)
+    try:
+        run(settingPaths[0])
+        Mbox('', 'done', 0)
+    except Exception as e:
+        Mbox('error', errorMesssage(e), 0)
 else:
-    Mbox('', 'unable to location "mods_registry.json', 0)
+    Mbox('error', 'unable to location "mods_registry.json', 0)
