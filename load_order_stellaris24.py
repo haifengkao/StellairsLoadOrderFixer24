@@ -7,7 +7,6 @@ import sys
 import traceback
 
 
-
 def abort(message):
     Mbox('abort', message, 0)
     sys.exit(1)
@@ -37,6 +36,16 @@ def getModList(data):
             print('key not found in ', key, data)
     modList.sort(key=sortedKey, reverse=True)
     return modList
+
+
+def tweakModOrder(list):
+    for i in range(len(list)-1, 0, -1):
+        j = i - 1
+        if list[j].sortedKey.startswith(list[i].sortedKey):
+            tmp = list[j]
+            list[j] = list[i]
+            list[i] = tmp
+    return list
 
 
 def writeLoadOrder(idList, dlc_load):
@@ -74,6 +83,8 @@ def run(settingPath):
     with open(registry) as json_file:
         data = json.load(json_file)
         modList = getModList(data)
+        # make sure UIOverhual+SpeedDial will load after UIOverhual
+        modList = tweakModOrder(modList)
     if len(modList) <= 0:
         abort('no mod found')
     idList = [mod.modId for mod in modList]
@@ -85,6 +96,7 @@ def run(settingPath):
 def Mbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
 
+
 def errorMesssage(error):
     error_class = e.__class__.__name__  # 取得錯誤類型
     detail = e.args[0]  # 取得詳細內容
@@ -95,6 +107,20 @@ def errorMesssage(error):
     funcName = lastCallStack[2]  # 取得發生的函數名稱
     return "File \"{}\", line {}, in {}: [{}] {}".format(
         fileName, lineNum, funcName, error_class, detail)
+
+
+def test():
+    mod1 = Mod("", "!(", "")
+    mod2 = Mod("", "!（更多中文", "")
+    mod3 = Mod("", "UI + PD", "")
+    mod4 = Mod("", "UI", "")
+    mod5 = Mod("", "UI + Speed Dial", "")
+    modList = [mod1, mod2, mod3, mod4, mod5]
+    modList.sort(key=sortedKey, reverse=True)
+    print([x.sortedKey for x in modList])
+    tweaked = tweakModOrder(modList)
+    print([x.sortedKey for x in tweaked])
+
 
 # check Stellaris settings location
 locations = [os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), ".", "..", os.path.join(
