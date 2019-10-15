@@ -122,8 +122,15 @@ def test():
     print([x.sortedKey for x in tweaked])
 
 
+try:
+    # sys.setdefaultencoding() does not exist, here!
+    reload(sys)  # Reload does the trick!
+    sys.setdefaultencoding('UTF8')
+except:
+    print('set encoding failed')
+
 # check Stellaris settings location
-locations = [os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), ".", "..", os.path.join(
+locations = [".", "..", os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), os.path.join(
     os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')]
 settingPaths = [settingPath for settingPath in locations if os.path.isfile(
     os.path.join(settingPath, "mods_registry.json"))]
@@ -133,6 +140,7 @@ if (len(settingPaths) > 0):
         run(settingPaths[0])
         Mbox('', 'done', 0)
     except Exception as e:
+        print(errorMesssage(e))
         Mbox('error', errorMesssage(e), 0)
 else:
     Mbox('error', 'unable to location "mods_registry.json', 0)
