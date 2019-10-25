@@ -5,6 +5,7 @@ import os
 import ctypes  # An included library with Python install.
 import sys
 import traceback
+import platform
 
 
 def abort(message):
@@ -74,8 +75,12 @@ def writeDisplayOrder(hashList, game_data):
 
 def run(settingPath):
     registry = os.path.join(settingPath, 'mods_registry.json')
+
     dlc_load = os.path.join(settingPath, 'dlc_load.json')
-    copyfile(dlc_load, dlc_load + '.bak')
+    if os.path.isfile(dlc_load):
+        copyfile(dlc_load, dlc_load + '.bak')
+    else:
+        abort('please enable at least one mod')
     game_data = os.path.join(settingPath, 'game_data.json')
     copyfile(game_data, game_data + '.bak')
 
@@ -94,8 +99,10 @@ def run(settingPath):
 
 
 def Mbox(title, text, style):
-    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
-
+    if platform.system() == 'Windows':
+        return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+    else:
+        print(title + ": " + text)
 
 def errorMesssage(error):
     error_class = e.__class__.__name__  # 取得錯誤類型
