@@ -39,7 +39,7 @@ def getModList(data):
 
 
 def tweakModOrder(list):
-    for i in range(len(list)-1, 0, -1):
+    for i in range(len(list) - 1, 0, -1):
         j = i - 1
         if list[j].sortedKey.startswith(list[i].sortedKey):
             tmp = list[j]
@@ -80,7 +80,7 @@ def run(settingPath):
     copyfile(game_data, game_data + '.bak')
 
     modList = []
-    with open(registry) as json_file:
+    with open(registry, encoding='UTF-8') as json_file:
         data = json.load(json_file)
         modList = getModList(data)
         # make sure UIOverhual+SpeedDial will load after UIOverhual
@@ -130,10 +130,17 @@ except:
     print('set encoding failed')
 
 # check Stellaris settings location
-locations = [".", "..", os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive', 'Stellaris'), os.path.join(
-    os.path.expanduser('~'), '.local', 'share', 'Paradox Interactive', 'Stellaris')]
-settingPaths = [settingPath for settingPath in locations if os.path.isfile(
-    os.path.join(settingPath, "mods_registry.json"))]
+locations = [
+    ".", "..",
+    os.path.join(os.path.expanduser('~'), 'Documents', 'Paradox Interactive',
+                 'Stellaris'),
+    os.path.join(os.path.expanduser('~'), '.local', 'share',
+                 'Paradox Interactive', 'Stellaris')
+]
+settingPaths = [
+    settingPath for settingPath in locations
+    if os.path.isfile(os.path.join(settingPath, "mods_registry.json"))
+]
 if (len(settingPaths) > 0):
     print('find Stellaris setting at ', settingPaths[0])
     try:
