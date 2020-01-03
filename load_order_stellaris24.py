@@ -34,7 +34,13 @@ def getModList(data):
             mod = Mod(key, name, modId)
             modList.append(mod)
         except KeyError:
-            print('key not found in ', key, data)
+            try:
+                name = data['displayName']
+                modId = data['steamId']
+                mod = Mod(key, name, modId)
+                modList.append(mod)
+            except KeyError:
+                print('key not found in ', key, data)
     modList.sort(key=sortedKey, reverse=True)
     return modList
 
