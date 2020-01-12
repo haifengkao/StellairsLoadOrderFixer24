@@ -55,6 +55,25 @@ def tweakModOrder(list):
     return list
 
 
+def specialOrder(list):
+    str1 = "UI Overhaul Dynamic"
+    str2 = "Dark UI"
+    list1 = []
+    list2 = []
+    # print(len(list))
+    for mod in list:
+        if str1 in mod.name:
+            list1.append(mod)
+            list.remove(mod)
+        if str2 in mod.name:
+            list2.append(mod)
+            list.remove(mod)
+    print(len(list1), len(list2), len(list))
+    list = list + list1 + list2
+    # print(len(list))
+    return list
+
+
 def writeLoadOrder(idList, dlc_load):
     data = {}
     with open(dlc_load, 'r+') as json_file:
@@ -96,6 +115,7 @@ def run(settingPath):
         modList = getModList(data)
         # make sure UIOverhual+SpeedDial will load after UIOverhual
         modList = tweakModOrder(modList)
+        modList = specialOrder(modList)
     if len(modList) <= 0:
         abort('no mod found')
     idList = [mod.modId for mod in modList]
@@ -109,6 +129,7 @@ def Mbox(title, text, style):
         return ctypes.windll.user32.MessageBoxW(0, text, title, style)
     else:
         print(title + ": " + text)
+
 
 def errorMesssage(error):
     error_class = e.__class__.__name__  # 取得錯誤類型
