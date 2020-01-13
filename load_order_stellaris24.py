@@ -56,7 +56,7 @@ def tweakModOrder(list):
 
 
 def specialOrder(list):
-    str1 = "UI Overhaul Dynamic"
+    str1 = "UI Overhaul Dynamic "
     str2 = "Dark UI"
     list1 = []
     list2 = []
