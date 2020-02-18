@@ -10,7 +10,7 @@ All patches will be put after main mods.
 Support Stellaris 2.5.*
 
 ## How to use
-Download [load_order_stellaris24.exe](https://github.com/haifengkao/StellairsLoadOrderFixer24/releases/download/1.2/load_order_stellaris24.exe)
+Download [load_order_stellaris24.exe](https://github.com/haifengkao/StellairsLoadOrderFixer24/releases/download/1.3/load_order_stellaris24.exe)
 
 Then double click it
 
