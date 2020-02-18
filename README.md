@@ -1,7 +1,7 @@
 # StellairsLoadOrderFixer24
 Sort Stellaris mods in *reverse* alphabetical order because 2.4's mod load order is different from 2.3.3
 
-Force load all incompatible mods (you can disable them manually in the launcher)
+Will sort all mods, but only enable mods already enabled.
 
 ## How to use
 Download [load_order_stellaris24.exe](https://github.com/haifengkao/StellairsLoadOrderFixer24/releases/download/1.2/load_order_stellaris24.exe)
