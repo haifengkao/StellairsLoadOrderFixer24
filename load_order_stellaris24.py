@@ -70,13 +70,17 @@ def specialOrder(mods):
     return mods + specialList
 
 
-def writeLoadOrder(idList, dlc_load):
+def writeLoadOrder(idList, dlc_load, enabled_mods):
     data = {}
     with open(dlc_load, 'r+') as json_file:
         data = json.load(json_file)
 
     if len(data) < 1:
         abort('dlc_load.json loading failed')
+
+    if enabled_mods is not None:
+        idList = [m for m in idList if m in enabled_mods]
+
     data['enabled_mods'] = idList
 
     with open(dlc_load, 'w') as json_file:
@@ -89,6 +93,7 @@ def writeDisplayOrder(hashList, game_data):
         data = json.load(json_file)
     if len(data) < 1:
         abort('game_data.json loading failed')
+
     data['modsOrder'] = hashList
     with open(game_data, 'w') as json_file:
         json.dump(data, json_file)
@@ -102,6 +107,15 @@ def run(settingPath):
         copyfile(dlc_load, dlc_load + '.bak')
     else:
         abort('please enable at least one mod')
+
+    enabled_mods = None
+    if os.path.exists(dlc_load):
+        with open(dlc_load) as dlc_load_file:
+            dlc_load_data = json.load(dlc_load_file)
+
+            # Do some legwork ahead of time to put into a set to avoidic quadratic loop later for filtering.
+            enabled_mods = frozenset(dlc_load_data.get("enabled_mods", []))
+
     game_data = os.path.join(settingPath, 'game_data.json')
     copyfile(game_data, game_data + '.bak')
 
@@ -109,6 +123,7 @@ def run(settingPath):
     with open(registry, encoding='UTF-8') as json_file:
         data = json.load(json_file)
         modList = getModList(data)
+
         # move Dark UI and UIOverhual to the bottom
         modList = specialOrder(modList)
         # make sure UIOverhual+SpeedDial will load after UIOverhual
@@ -118,7 +133,7 @@ def run(settingPath):
     idList = [mod.modId for mod in modList]
     hashList = [mod.hashKey for mod in modList]
     writeDisplayOrder(hashList, game_data)
-    writeLoadOrder(idList, dlc_load)
+    writeLoadOrder(idList, dlc_load, enabled_mods)
 
 
 def Mbox(title, text, style):
