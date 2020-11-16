@@ -20,6 +20,12 @@ class Mod():
         self.modId = modId
         self.sortedKey = name.encode('ascii', errors='ignore')
 
+        lowerCaseKey = self.sortedKey.lower()
+        if (len(lowerCaseKey) > 0 and lowerCaseKey[0] != '!'):
+            keywords = [keyword for keyword in ['override', 'compatibility', 'patch'] if lowerCaseKey.find(keyword)]
+            if (len(keywords) > 0):
+                self.sortedKey = '!' + self.sortedKey
+
 
 def sortedKey(mod):
     return mod.sortedKey
@@ -39,6 +45,7 @@ def getModList(data):
     return modList
 
 
+# UIOverhual + speeddial should appear after UIOverhual
 def tweakModOrder(list):
     for i in range(len(list) - 1, 0, -1):
         j = i - 1
